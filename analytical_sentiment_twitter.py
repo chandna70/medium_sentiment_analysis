@@ -98,6 +98,7 @@ df_2=df_twitter[df_twitter['label']==2].tweet_text
 df_2=df_2.apply(lambda x:re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)","",x)).values
 t2=list(miter.collapse([x.split() for x in df_2]))
 
+
 img=np.array(Image.open('/content/drive/MyDrive/Icon for Wordcloud Text/twitter.JPG'))
 wordtext1=WordCloud(height=1800,width=2500,mask=img,max_words=max([len(t0),len(t1),len(t2)]),background_color='white').generate(str(df_0))
 wordtext2=WordCloud(height=1800,width=2500,mask=img,max_words=max([len(t0),len(t1),len(t2)]),background_color='white').generate(str(df_1))
@@ -121,10 +122,11 @@ plt.title('Positive Words',fontweight='bold')
 plt.axis('off')
 plt.show()
 
-# 1.5 Percentage of reaction through links url
+# 1.4 Percentage of reaction through links url
 urls =[line for line,x in enumerate(df_twitter['tweet_text']) if re.findall('(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-&?=%.]+', x)]
 df_urls1=df_twitter.loc[urls,['tweet_text','label']]
 x,y=count_target(df_urls1.label)
+y
 label=['Negative','Neutral','Positive']
 df_urls=pd.DataFrame({"class":label,"height":y})
 
@@ -150,22 +152,22 @@ for i,text in enumerate(ax):
              fontsize=14)
 gcf=plt.gcf()
 gcf.gca().add_artist(plt.Circle( (0,0), 0.7, color='white'))
-plt.title("Precentage of attached URL Text Based On Their Reaction", fontweight='bold')
+plt.title("Percentage of attached URL  Based On Their Reaction", fontweight='bold')
 
-# 1.6 Counting url from each text 
+# 1.5 Counting url from each text 
 count_url=[]
 df_count=df_twitter.tweet_text
 for id,text in enumerate(df_count):
   count = 0
   for sub_text in text.split():
-    if (re.match('(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-&?=%.]+',sub_text)):
+    if (re.findall('(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-&?=%.]+',sub_text)):
       count=count+1
   count_url.append(count)
 
 df_count_url=df_twitter.assign(count_url=count_url)
 df_count=df_count_url.groupby(['label','count_url']).size().reset_index(name='size_url')
 
-figure,ax=plt.subplots(nrows=1,ncols=3,figsize=(17,7))
+figure,ax=plt.subplots(nrows=1,ncols=3,figsize=(25,10))
 for i in set(df_count['label']):
   if (i==0):
     bar=ax[i].bar(data=df_count[df_count['label']==i],
@@ -173,8 +175,10 @@ for i in set(df_count['label']):
                 height='size_url',
                 color='blue')
     for idx,x in enumerate(bar.patches):
-      ax[i].annotate(x.get_height(),xy=(idx,x.get_height()+0.35),ha='center',fontweight='bold')
-    ax[i].set_title('Negative Reaction',fontweight='bold')
+      ax[i].annotate(x.get_height(),xy=(idx,x.get_height()+0.412),ha='center',fontsize=13)
+    ax[i].set_title('Negative Response',fontweight='bold')
+    ax[i].set_xlabel('Group')
+    ax[i].set_ylabel('Total')
     x_index=df_count[df_count['label']==i]['count_url'].values
     ax[i].set_xticks(x_index)
     
@@ -184,8 +188,10 @@ for i in set(df_count['label']):
                 height='size_url',
                 color='orange')
     for idx,x in enumerate(bar.patches):
-      ax[i].annotate(x.get_height(),xy=(idx,x.get_height()+0.35),ha='center',fontweight='bold')
-    ax[i].set_title('Neutral Reaction',fontweight='bold')
+      ax[i].annotate(x.get_height(),xy=(idx,x.get_height()+0.412),ha='center',fontsize=13)
+    ax[i].set_title('Neutral Response',fontweight='bold')
+    ax[i].set_xlabel('Group')
+    ax[i].set_ylabel('Total')
     x_index=df_count[df_count['label']==i]['count_url'].values
     ax[i].set_xticks(x_index)
   
@@ -195,11 +201,13 @@ for i in set(df_count['label']):
                 height='size_url',
                 color='red')
     for idx,x in enumerate(bar.patches):
-      ax[i].annotate(x.get_height(),xy=(idx,x.get_height()+0.35),ha='center',fontweight='bold')
+      ax[i].annotate(x.get_height(),xy=(idx,x.get_height()+0.412),ha='center',fontsize=13)
     ax[i].set_title('Positive Reaction',fontweight='bold')
     x_index=df_count[df_count['label']==i]['count_url'].values
+    ax[i].set_xlabel('Group')
+    ax[i].set_ylabel('Total')
     ax[i].set_xticks(x_index)
-figure.suptitle('Group Number of URL Based on Reactions',fontweight='bold')
+figure.suptitle('Group the number of attached URLs Based on Reactions',fontweight='bold')
 
 ##Check 1-Gram, 2-gram and 3-gram
 from sklearn.feature_extraction.text import CountVectorizer
@@ -237,7 +245,9 @@ df_vectorize=c_vector.fit_transform(df_gram)
 df_3gram=pd.DataFrame(df_vectorize.sum(axis=0),columns=c_vector.get_feature_names()).T.sort_values(0,ascending=False).reset_index()
 df_3gram.rename(columns={'index':'3_gram',0:'total'},inplace=True)
 
-
+print('Descriptive Statistics of 1-gram')
 df_1gram['total'].describe()
+print('Descriptive Statistics of 2-gram')
 df_2gram['total'].describe()
+print('Descriptive Statistics of 3-gram')
 df_3gram['total'].describe()
