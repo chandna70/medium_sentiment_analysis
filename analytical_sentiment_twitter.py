@@ -99,7 +99,7 @@ df_2=df_2.apply(lambda x:re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)
 t2=list(miter.collapse([x.split() for x in df_2]))
 
 
-img=np.array(Image.open('/content/drive/MyDrive/Icon for Wordcloud Text/twitter.JPG'))
+img=np.array(Image.open('/.../.../.../.../twitter.JPG'))
 wordtext1=WordCloud(height=1800,width=2500,mask=img,max_words=max([len(t0),len(t1),len(t2)]),background_color='white').generate(str(df_0))
 wordtext2=WordCloud(height=1800,width=2500,mask=img,max_words=max([len(t0),len(t1),len(t2)]),background_color='white').generate(str(df_1))
 wordtext3=WordCloud(height=1800,width=2500,mask=img,max_words=max([len(t0),len(t1),len(t2)]),background_color='white').generate(str(df_2))
